@@ -1,0 +1,4 @@
+contrast	estimate	SE	df	t.ratio	p.value	sig
+Enterisol_I4512i - Mock_I4512i	0.036	0.13	38	0.27	0.79	FALSE
+Enterisol_I4512i - Mock_Mock	-0.22	0.14	38	-1.6	0.18	FALSE
+Mock_I4512i - Mock_Mock	-0.25	0.14	38	-1.8	0.18	FALSE
