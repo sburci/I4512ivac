@@ -139,7 +139,7 @@ shan1f + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 dev.off()
 
 EFGcc_rare@sam_data$Shannon <- diversity(EFGcc_rare@otu_table)
-tiff(filename="./graphics/I4512ivac_cc_shannon_groups.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_cecalcontents_shannon_groups.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 shancc <- EFGcc_rare@sam_data %>%
   ggplot(aes(x=Group, y=Shannon, group=set, fill=Group)) +
   geom_boxplot() +
@@ -148,7 +148,7 @@ shancc <- EFGcc_rare@sam_data %>%
   theme_bw()
 shancc + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 dev.off()
-tiff(filename="./graphics/I4512ivac_cc_shannon_groups2.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_cecalcontents_shannon_groups2.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 shan1cc <- EFGcc_rare@sam_data %>%
   ggplot(aes(x=Treatment, y=Shannon, group=set, fill=Treatment)) +
   geom_boxplot() +
@@ -180,7 +180,7 @@ simp1f + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 dev.off()
 
 EFGcc_rare@sam_data$Simpson <- diversity(EFGcc_rare@otu_table)
-tiff(filename="./graphics/I4512ivac_cc_simpson_groups.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_cecalcontents_simpson_groups.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 simpcc <- EFGcc_rare@sam_data %>%
   ggplot(aes(x=Group, y=Simpson, group=set, fill=Group)) +
   geom_boxplot() +
@@ -189,7 +189,7 @@ simpcc <- EFGcc_rare@sam_data %>%
   theme_bw()
 simpcc + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 dev.off()
-tiff(filename="./graphics/I4512ivac_cc_simpson_groups2.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_cecalcontents_simpson_groups2.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 simp1cc <- EFGcc_rare@sam_data %>%
   ggplot(aes(x=Treatment, y=Simpson, group=set, fill=Treatment)) +
   geom_boxplot() +
@@ -221,7 +221,7 @@ chao1f + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 dev.off()
 
 EFGcc_rare@sam_data$Chao1 <- diversity(EFGcc_rare@otu_table)
-tiff(filename="./graphics/I4512ivac_cc_shannon_groups.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_cecalcontents_chao1_groups.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 chaocc <- EFGcc_rare@sam_data %>%
   ggplot(aes(x=Group, y=Chao1, group=set, fill=Group)) +
   geom_boxplot() +
@@ -230,7 +230,7 @@ chaocc <- EFGcc_rare@sam_data %>%
   theme_bw()
 chaocc + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 dev.off()
-tiff(filename="./graphics/I4512ivac_cc_shannon_groups2.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_cecalcontents_chao1_groups2.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 chao1cc <- EFGcc_rare@sam_data %>%
   ggplot(aes(x=Treatment, y=Chao1, group=set, fill=Treatment)) +
   geom_boxplot() +
@@ -279,7 +279,7 @@ shan_contrastsf <- emmeans::contrast(EMMEANSf, method='pairwise', adjust='fdr')
 contrasts_tablef <- shan_contrastsf %>% as.data.frame()
 plot_datf <- EMMEANSf %>% as.data.frame()
 
-tiff(filename="./graphics/I4512ivac_fecal_alpha_div_over_time.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_fecal_shannon_alpha_div_over_time.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 plot_datf %>%
   ggplot(aes(x=Days_post_challenge,
              y=emmean,ymin=lower.CL,
@@ -299,6 +299,9 @@ EMMEANScc <- emmeans(shannon_modcc, ~ Group)
 shan_contrastscc <- emmeans::contrast(EMMEANScc, method='pairwise', adjust='fdr')
 contrasts_tablecc <- shan_contrastscc %>% as.data.frame()
 plot_datcc <- EMMEANScc %>% as.data.frame()
+
+
+
 
 
 # Alpha contrasts table

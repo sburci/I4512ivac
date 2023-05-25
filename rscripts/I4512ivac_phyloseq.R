@@ -19,15 +19,18 @@ library(ggplot2) #v3.4.0
 
 ## Build phyloseq objects
 OTU <- phyloseq::import_mothur(mothur_shared_file = './mothuro/I4512ivac.otu.shared') %>% t()
-TAX <- phyloseq::import_mothur(mothur_constaxonomy_file = './mothuro/I4512ivac.otu.taxonomy')
+TAX <- phyloseq::import_mothur(mothur_constaxonomy_file = './mothuro/I4512ivac.otu.taxonomy') 
 colnames(TAX) <- c('Domain', 'Phylum', 'Class', 'Order', 'Family' , 'Genus' )
+    ## Edit taxanomy names - remove "_unclassified"
+
 
 MET <- read_csv('./I4512ivac_metadata.csv') %>% 
   mutate(ID=SampleID, 
          dpc=factor(Days_post_challenge, levels=c("-28", "-1", "2", "3", "7", "10", "14"))) %>% #creating categorical variable dpc and setting order of days
   select(ID, everything()) %>% 
   column_to_rownames(var = "ID") %>% 
-  sample_data()
+  sample_data() 
+MET$tdpc <- paste(MET$Treatment, MET$Days_post_challenge, sep = "_") #combine treatment & dpc column for downstream relative abundance calculations
 
 PHYLO <- phyloseq(MET, TAX, OTU)
 
