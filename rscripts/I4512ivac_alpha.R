@@ -113,7 +113,9 @@ richchaocc + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 dev.off()
 
 ##Rarefy_even_depth
+set.seed(19760620)
 EFGf_rare <- rarefy_even_depth(EFGf)
+set.seed(19760620)
 EFGcc_rare <- rarefy_even_depth(EFGcc)
 
 # Creating boxplots for each alpha diversity measure
@@ -148,14 +150,17 @@ shancc <- EFGcc_rare@sam_data %>%
   theme_bw()
 shancc + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 dev.off()
+
 tiff(filename="./graphics/I4512ivac_cecalcontents_shannon_groups2.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 shan1cc <- EFGcc_rare@sam_data %>%
   ggplot(aes(x=Treatment, y=Shannon, group=set, fill=Treatment)) +
-  geom_boxplot() +
+  geom_boxplot(position = position_dodge(1), width = 0.15) +
+  ggtitle("Alpha diversity of all treatment groups 14 days post challenge",
+          "Cecal contents") +
   facet_wrap(~Days_post_challenge, nrow=1) +
   scale_fill_manual(values=c(MVMC='green', MVC='skyblue', EVC='orange')) +
   theme_bw()
-shan1cc + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+shan1cc + theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust=1))
 dev.off()
 
     ### Simpson
@@ -258,6 +263,9 @@ colnames(EFGf_rare@sam_data)
 
 shannon_modf <- lm(data = mod_datf, formula= Shannon ~ Days_post_challenge * Group)
 shannon_modf %>% summary()
+shannon_modf_df <- data.frame(shannon_modf) %>% summary()
+write_tsv(shannon_modf %>% summary(), "./outputs/I4512ivac_fecal_alpha_linearmodel.tsv")
+
 
 mod_datcc <-
   EFGcc_rare@sam_data %>%
@@ -291,6 +299,25 @@ plot_datf %>%
   scale_color_manual(values=c(Mock_Mock = 'green',
                               Mock_I4512i = 'skyblue',
                               Enterisol_I4512i = 'orange')) +
+  theme_bw()
+dev.off()
+
+tiff(filename="./graphics/I4512ivac_fecal_shannon_alpha_div_over_time2.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+plot_datf %>%
+  ggplot(aes(x=Days_post_challenge,
+             y=emmean,ymin=lower.CL,
+             ymax=upper.CL,
+             group=Group, color=Group)) +
+  geom_pointrange(position = position_dodge(width = .2)) +
+  geom_line() + ggtitle('Alpha diversity of all treatment groups over time',
+                        'Fecal samples') +
+  xlab('Days post challenge') +
+  ylab('Shannon') +
+  scale_color_manual(values=c(Mock_Mock = 'green',
+                              Mock_I4512i = 'skyblue',
+                              Enterisol_I4512i = 'orange'),
+                     labels=c("EVC", "MVC", "MVMC")) +
+  guides(color = guide_legend(override.aes = list(linetype = 0, size = 1.2))) +
   theme_bw()
 dev.off()
 

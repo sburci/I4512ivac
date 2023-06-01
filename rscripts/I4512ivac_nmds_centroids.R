@@ -28,8 +28,8 @@ sample_data(PHYLO)$Challenge <- factor(sample_data(PHYLO)$Challenge, levels=c('M
 
 ## Create subsets (Fecal and Cecal_contents)
 PHYLOf <- prune_samples(samples = PHYLO@sam_data$Sample_Type=="Fecal", x = PHYLO)
-PHYLOcc <- prune_samples(samples = PHYLO@sam_data$Sample_Type=="Cecal_contents", x = PHYLO)
 PHYLOf2 <- prune_samples(samples = PHYLOf@sam_data$Challenge=="I4512i", x = PHYLOf)
+PHYLOcc <- prune_samples(samples = PHYLO@sam_data$Sample_Type=="Cecal_contents", x = PHYLO)
 
 ## Create OTU R matrix and dataframe with metadata from phyloseq object
 OTUmatf <- as(otu_table(PHYLOf), "matrix")
@@ -91,8 +91,8 @@ METcc <- METcc %>%
   left_join(NMDSscorescc)
 
     ###Calculation of ordination stress
-NMDSf$stress
-NMDScc$stress
+NMDSf$stress  # = 0.1434989
+NMDScc$stress # = 0.1324859
 
    ### View order of variables in METf columns
 METf$Days_post_challenge %>% 
@@ -103,17 +103,17 @@ METf$Treatment %>%
     ### Describing centroids: Group_by dpc and Treatment
 METf <- METf %>% 
   group_by(dpc, Treatment) %>% 
-  mutate(centnmds1=mean(NMDS1),
+  dplyr::mutate(centnmds1=mean(NMDS1),
          centnmds2=mean(NMDS2)) %>% 
   ungroup()
 METf2 <- METf2 %>% 
   group_by(dpc, Treatment) %>% 
-  mutate(centnmds1=mean(NMDS1),
+  dplyr::mutate(centnmds1=mean(NMDS1),
          centnmds2=mean(NMDS2)) %>% 
   ungroup()
 METcc <- METcc %>% 
   group_by(dpc, Treatment) %>% 
-  mutate(centnmds1=mean(NMDS1),
+  dplyr::mutate(centnmds1=mean(NMDS1),
          centnmds2=mean(NMDS2)) %>% 
   ungroup()
 
@@ -144,9 +144,9 @@ sub1 %>%
 dev.off()
 
 ###NMDS with centroids
-tiff(filename="./graphics/I4512ivac_fecal_alltreatments_nmds.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_fecal_alltreatments_nmds_centroids.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 METf %>% 
-  select(centnmds1, centnmds2, Treatment, dpc) %>% 
+  dplyr::select(centnmds1, centnmds2, Treatment, dpc) %>% 
   unique() %>% 
   arrange(dpc) %>% 
   ggplot(aes(x=centnmds1, y=centnmds2, color=Treatment)) +
@@ -155,16 +155,18 @@ METf %>%
   geom_path(aes(group=Treatment)) +
   geom_point(size=6) +
   geom_text(aes(label=dpc), color='black') +
-  ggtitle('NMDS of all treatment groups over time') +
+  ggtitle('NMDS of all treatment groups over time',
+          'Fecal samples') +
   xlab('NMDS1') +
   ylab('NMDS2') +
   scale_color_manual(values=c(MVMC='green', MVC='skyblue', EVC='orange')) +
+  annotate("text", x=0.5, y=-0.30, label="Stress = 0.144", size = 4) +
   theme_bw()
 dev.off()
     ###Excluding MVMC
-tiff(filename="./graphics/I4512ivac_fecal_alltreatments_nomvmc_nmds.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_fecal_alltreatments_nomvmc_nmds_centroids.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 sub1 %>% 
-  select(centnmds1, centnmds2, Treatment, dpc) %>% 
+  dplyr::select(centnmds1, centnmds2, Treatment, dpc) %>% 
   unique() %>% 
   arrange(dpc) %>% 
   ggplot(aes(x=centnmds1, y=centnmds2, color=Treatment)) +
@@ -181,7 +183,7 @@ sub1 %>%
 dev.off()
 
 #Cecal contents
-tiff(filename="./graphics/I4512ivac_cc_alltreatmentsbydpc_nmds.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_cecalcontents_alltreatmentsbydpc_nmds.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 METcc %>% 
   ggplot(aes(x=NMDS1, y=NMDS2, color=Treatment)) +
   geom_point() +
@@ -194,7 +196,7 @@ dev.off()
 
 ##By days post challenge
     ###No MVMC Fecal
-tiff(filename="./graphics/I4512ivac_fecal_alltreatmentsbydpc_nomvmc_nmds2.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_fecal_alltreatmentsbydpc_nomvmc_nmds2_centroids.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 METf2 %>% 
   ggplot(aes(x=NMDS1, y=NMDS2, color=Treatment)) +
   geom_point() +
@@ -205,7 +207,7 @@ METf2 %>%
   theme_bw()
 dev.off()
     ###NMDS with centroids
-tiff(filename="./graphics/I4512ivac_fecal_alltreatments_nomvmc_nmds2.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_fecal_alltreatments_nomvmc_nmds2_centroids.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 METf2 %>% 
   select(centnmds1, centnmds2, Treatment, dpc) %>% 
   unique() %>% 
@@ -285,7 +287,7 @@ ggplot(subset(METf, Treatment %in% c("MVC", "EVC") & dpc %in% c("-1")), aes(x=NM
                "free") 
 #OR
 subA <- subset(METf, Treatment %in% c("MVC", "EVC") & dpc %in% c("-1"))
-tiff(filename="./graphics/I4512ivac_fecal_vaceff_nmdscentroids.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_fecal_vaceff_nmds_centroids.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 subA %>% 
   select(centnmds1, centnmds2, Vaccine, dpc) %>% 
   unique() %>% 
@@ -305,7 +307,7 @@ subA %>%
 dev.off()
 #Including dpc -28 and -1 day prior to vaccine
 subAa <- subset(METf, Treatment %in% c("MVC", "EVC") & dpc %in% c("-1", "-28"))
-tiff(filename="./graphics/I4512ivac_fecal_vaceff_with-28_nmdscentroids.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_fecal_vaceff_with-28_nmds_centroids.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 subAa %>% 
   select(centnmds1, centnmds2, Vaccine, dpc) %>% 
   unique() %>% 
@@ -325,7 +327,7 @@ subAa %>%
 dev.off()
 #No MVMC
 subA2 <- subset(METf2, Treatment %in% c("MVC", "EVC") & dpc %in% c("-1"))
-tiff(filename="./graphics/I4512ivac_fecal_vaceff_nmdscentroids2.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_fecal_vaceff_nmds_centroids2.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 subA2 %>% 
   select(centnmds1, centnmds2, Vaccine, dpc) %>% 
   unique() %>% 
@@ -345,7 +347,7 @@ subA2 %>%
 dev.off()
 #Including dpc -28 and -1 day prior to vaccine
 subAa2 <- subset(METf2, Treatment %in% c("MVC", "EVC") & dpc %in% c("-1", "-28"))
-tiff(filename="./graphics/I4512ivac_fecal_vaceff_with-28_nmdscentroids2.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_fecal_vaceff_with-28_nmds_centroids2.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 subAa2 %>% 
   select(centnmds1, centnmds2, Vaccine, dpc) %>% 
   unique() %>% 
@@ -367,7 +369,7 @@ dev.off()
 # (B) SALMONELLA CHALLENGE EFFECT ON PORCINE FECAL MICROBIOME (MVMC and MVC; dpc 2, 3, 7, 10, 14; Fecal)
 #All dpc
 subB <- subset(METf, Treatment %in% c("MVMC", "MVC"))
-tiff(filename="./graphics/I4512ivac_fecal_salchaeff_alldpc_nmdscentroids.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_fecal_salchaeff_alldpc_nmds_centroids.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 subB %>% 
   select(centnmds1, centnmds2, Challenge, dpc) %>% 
   unique() %>% 
@@ -386,7 +388,7 @@ subB %>%
 dev.off()
 #Excluding dpc -28 and dpc -1 (only including days after Salmonella challenge)
 subBb <- subset(METf, Treatment %in% c("MVMC", "MVC") & !dpc %in% c("-28", "-1"))
-tiff(filename="./graphics/I4512ivac_fecal_salchaeff_nodpc-28-1_nmdscentroids.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_fecal_salchaeff_nodpc-28-1_nmds_centroids.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 subBb %>% 
   select(centnmds1, centnmds2, Challenge, dpc) %>% 
   unique() %>% 
@@ -407,7 +409,7 @@ dev.off()
 # (C) VACCINATION EFFECT ON SALMONELLA CHALLENGED PORCINE FECAL MICROBIOME (MVC and EVC; dpc 2, 3, 7, 10, 14; Fecal)
 #All dpc (including -28)
 subC <- subset(METf, Treatment %in% c("MVC", "EVC"))
-tiff(filename="./graphics/I4512ivac_fecal_vaceffonsalcha_alldpc_nmdscentroids.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_fecal_vaceffonsalcha_alldpc_nmds_centroids.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 subC %>% 
   select(centnmds1, centnmds2, Vaccine, dpc) %>% 
   unique() %>% 
@@ -426,7 +428,7 @@ subC %>%
 dev.off()
 #Excluding dpc -28 and dpc -1 (only including days after Salmonella challenge)
 subCc <- subset(METf, Treatment %in% c("MVC", "EVC") & !dpc %in% c("-28", "-1"))
-tiff(filename="./graphics/I4512ivac_fecal_vaceffonsalcha__nodpc-28-1_nmdscentroids.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_fecal_vaceffonsalcha__nodpc-28-1_nmds_centroids.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 subCc %>% 
   select(centnmds1, centnmds2, Vaccine, dpc) %>% 
   unique() %>% 
@@ -446,7 +448,7 @@ dev.off()
 #No MVMC
 #All dpc (including -28)
 subC2 <- subset(METf2, Treatment %in% c("MVC", "EVC"))
-tiff(filename="./graphics/I4512ivac_fecal_vaceffonsalcha_alldpc_nmdscentroids2.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_fecal_vaceffonsalcha_alldpc_nmds_centroids2.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 subC2 %>% 
   select(centnmds1, centnmds2, Vaccine, dpc) %>% 
   unique() %>% 
@@ -465,7 +467,7 @@ subC2 %>%
 dev.off()
 #Excluding dpc -28 and dpc -1 (only including days after Salmonella challenge)
 subCc2 <- subset(METf2, Treatment %in% c("MVC", "EVC") & !dpc %in% c("-28", "-1"))
-tiff(filename="./graphics/I4512ivac_fecal_vaceffonsalcha__nodpc-28-1_nmdscentroids2.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_fecal_vaceffonsalcha__nodpc-28-1_nmds_centroids2.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 subCc2 %>% 
   select(centnmds1, centnmds2, Vaccine, dpc) %>% 
   unique() %>% 
@@ -485,7 +487,7 @@ dev.off()
 
 # (D) SALMONELLA CHALLENGE EFFECT ON PORCINE CECAL MICROBIOME (MVMC and MVC; D14 or dpc 14; Cecal_contents)
 subD <- subset(METcc, Treatment %in% c("MVMC", "MVC"))
-tiff(filename="./graphics/I4512ivac_cc_salchaeff_dpc14_nmdscentroids.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_cecalcontents_salchaeff_dpc14_nmds_centroids.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 subD %>% 
   select(centnmds1, centnmds2, Challenge, dpc) %>% 
   unique() %>% 
@@ -506,7 +508,7 @@ dev.off()
 
 # (E) VACCINATION EFFECT ON SALMONELLA CHALLENGED PORCINE CECAL MICROBIOME (MVC and EVC; D14 or dpc 14; Cecal_contents)
 subE <- subset(METcc, Treatment %in% c("MVC", "EVC"))
-tiff(filename="./graphics/I4512ivac_cc_vacchaeff_dpc14_nmdscentroids.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+tiff(filename="./graphics/I4512ivac_cecalcontents_vacchaeff_dpc14_nmds_centroids.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 subE %>% 
   select(centnmds1, centnmds2, Vaccine, dpc) %>% 
   unique() %>% 
@@ -522,6 +524,27 @@ subE %>%
   xlab('NMDS1') +
   ylab('NMDS2') +
   scale_color_manual(values=c(Mock='skyblue', Enterisol='orange')) +
+  theme_bw()
+dev.off()
+
+# (F) ALL PORCINE CECAL MICROBIOME (MVC, EVC, MVMC; D14 or dpc 14; Cecal_contents)
+tiff(filename="./graphics/I4512ivac_cecalcontents_alltreatments_nmds_centroids.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+METcc %>% 
+  dplyr::select(centnmds1, centnmds2, Treatment, dpc) %>% 
+  unique() %>% 
+  arrange(dpc) %>% 
+  ggplot(aes(x=centnmds1, y=centnmds2, color=Treatment)) +
+  geom_point(data=METcc, aes(x=NMDS1, y=NMDS2, color=Treatment), alpha=.5) +
+  geom_segment(data=METcc, aes(x=NMDS1, y=NMDS2, xend=centnmds1, yend=centnmds2, color=Treatment), alpha=.25) +
+  geom_path(aes(group=Treatment)) +
+  geom_point(size=6) +
+  geom_text(aes(label=dpc), color='black') +
+  ggtitle('NMDS of all treatment groups 14 days post challenge', 
+          'Cecal contents') +
+  xlab('NMDS1') +
+  ylab('NMDS2') +
+  scale_color_manual(values=c(MVMC='green', MVC='skyblue', EVC='orange')) +
+  annotate("text", x=0.32, y=-0.20, label="Stress = 0.133", size = 4) +
   theme_bw()
 dev.off()
 

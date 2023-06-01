@@ -77,7 +77,7 @@ tiff('./graphics/I4512ivac_fecal_relative_abundance_percent_bytreatment.tiff', u
 ggplot(dataf, aes(x = dpc, y = Abundance, fill = Genus)) +
   geom_bar(stat = "identity", color = "black") +
   facet_grid(~Treatment) + 
-  labs(x = "Days post inoculation", y = "Relative abundance (%)") +
+  labs(x = "Days post challenge", y = "Relative abundance (%)") +
   ggtitle("Relative abundance of fecal samples by treatment") +
   theme(plot.title = element_text(hjust = 0.5)) +
   theme(
@@ -98,7 +98,7 @@ ggplot(dataf, aes(x = Treatment, y = Abundance, fill = Genus)) +
   geom_bar(stat = "identity", color = "black") +
   facet_grid(~dpc) + 
   labs(x = "Treatment", y = "Relative abundance (%)") +
-  ggtitle("Relative abundance of fecal samples by days post inoculation") +
+  ggtitle("Relative abundance of fecal samples by days post challenge") +
   theme(plot.title = element_text(hjust = 0.5)) + 
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
   theme(
@@ -141,7 +141,7 @@ tiff('./graphics/I4512ivac_cecalcontents_relative_abundance_percent_bytreatment.
 ggplot(datacc, aes(x = dpc, y = Abundance, fill = Genus)) +
   geom_bar(stat = "identity", color = "black", width = 0.20) +
   facet_grid(~Treatment) + 
-  labs(x = "Days post inoculation", y = "Relative abundance (%)") +
+  labs(x = "Days post challenge", y = "Relative abundance (%)") +
   ggtitle("Relative abundance of cecal contents by treatment") +
   theme(plot.title = element_text(hjust = 0.5)) +
   theme(
@@ -162,7 +162,7 @@ ggplot(datacc, aes(x = Treatment, y = Abundance, fill = Genus)) +
   geom_bar(stat = "identity", color = "black", width = 0.15, position = "fill") +
   facet_grid(~dpc) + 
   labs(x = "Treatment", y = "Relative abundance (%)") +
-  ggtitle("Relative abundance of cecal contents by days post inoculation") +
+  ggtitle("Relative abundance of cecal contents by days post challenge") +
   theme(plot.title = element_text(hjust = 0.5)) + 
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
   theme(
