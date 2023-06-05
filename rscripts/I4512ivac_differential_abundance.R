@@ -11,6 +11,7 @@
 
 
 # DIFFERENTIAL ABUNDANCE: STATS USING DESeq2___________________________________________________
+# DESeq2 normalizes data, fits model, and runs statistical test to identify log2FoldChange in OTUs
 library(tidyverse)
 library(phyloseq)
 library(cowplot)

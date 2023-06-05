@@ -153,7 +153,7 @@ METf %>%
   geom_point(data=METf, aes(x=NMDS1, y=NMDS2, color=Treatment), alpha=.5) +
   geom_segment(data=METf, aes(x=NMDS1, y=NMDS2, xend=centnmds1, yend=centnmds2, color=Treatment), alpha=.25) +
   geom_path(aes(group=Treatment)) +
-  geom_point(size=6) +
+  geom_point(aes(shape = Treatment), size=6) +
   geom_text(aes(label=dpc), color='black') +
   ggtitle('NMDS of all treatment groups over time',
           'Fecal samples') +
@@ -161,7 +161,8 @@ METf %>%
   ylab('NMDS2') +
   scale_color_manual(values=c(MVMC='green', MVC='skyblue', EVC='orange')) +
   annotate("text", x=0.5, y=-0.30, label="Stress = 0.144", size = 4) +
-  theme_bw()
+  theme_bw() +
+  theme(legend.position="bottom")
 dev.off()
     ###Excluding MVMC
 tiff(filename="./graphics/I4512ivac_fecal_alltreatments_nomvmc_nmds_centroids.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
@@ -537,7 +538,7 @@ METcc %>%
   geom_point(data=METcc, aes(x=NMDS1, y=NMDS2, color=Treatment), alpha=.5) +
   geom_segment(data=METcc, aes(x=NMDS1, y=NMDS2, xend=centnmds1, yend=centnmds2, color=Treatment), alpha=.25) +
   geom_path(aes(group=Treatment)) +
-  geom_point(size=6) +
+  geom_point(aes(shape = Treatment), size=6) +
   geom_text(aes(label=dpc), color='black') +
   ggtitle('NMDS of all treatment groups 14 days post challenge', 
           'Cecal contents') +
