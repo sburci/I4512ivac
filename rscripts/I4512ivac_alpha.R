@@ -68,14 +68,14 @@ plot_richness(PHYLOf, x="Treatment", color="Treatment", measures=c("Shannon", "S
 plot_richness(PHYLOcc, x="Treatment", color="Treatment", measures=c("Shannon", "Simpson", "Chao1"))
     ### Shannon
 tiff(filename="./graphics/I4512ivac_fecal_plotrichness_shannon_groups.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
-richshanf <- plot_richness(PHYLOf, x="Treatment", color="Treatment", measures=c("Shannon")) + 
+richf <- plot_richness(PHYLOf, x="Treatment", color="Treatment", measures=c("Shannon")) + 
   geom_point(aes(color=Treatment)) +
   scale_color_manual(values=c(MVMC='green', MVC='skyblue', EVC='orange')) +
   theme_bw()
 richf + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 dev.off()
 tiff(filename="./graphics/I4512ivac_cecalcontents_plotrichness_shannon_groups.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
-richshancc <- plot_richness(PHYLOcc, x="Treatment", color="Treatment", measures=c("Shannon")) + 
+richcc <- plot_richness(PHYLOcc, x="Treatment", color="Treatment", measures=c("Shannon")) + 
   geom_point(aes(color=Treatment)) +
   scale_color_manual(values=c(MVMC='green', MVC='skyblue', EVC='orange')) +
   theme_bw()
@@ -257,7 +257,7 @@ dev.off()
 mod_datf <-
   EFGf_rare@sam_data %>%
   data.frame() %>%
-  mutate(Group=factor(Group, levels=c('Enterisol_I4512i', 'Mock_I4512i', 'Mock_Mock')),
+  mutate(Group=factor(Treatment, levels=c('EVC', 'MVC', 'MVMC')),
          Days_post_challenge = factor(Days_post_challenge, levels = c('-28', '-1', '2', '3', '7','10', '14')))
 colnames(EFGf_rare@sam_data)
 
@@ -294,13 +294,16 @@ plot_datf %>%
              ymax=upper.CL,
              group=Group, color=Group)) +
   geom_pointrange(position = position_dodge(width = .2)) +
+  geom_point(aes(shape = Group), size=5) +
   geom_line() + ggtitle('Alpha diversity over time') +
-  ylab('Shannon') +
-  scale_color_manual(values=c(Mock_Mock = 'green',
-                              Mock_I4512i = 'skyblue',
-                              Enterisol_I4512i = 'orange')) +
+  labs(x = 'Days post challenge', y = 'Shannon') +
+  scale_color_manual(values=c(MVMC = 'green',
+                              MVC = 'skyblue',
+                              EVC = 'orange')) +
+  guides(color = guide_legend(override.aes = list(linetype = 0))) +
   theme_bw()
 dev.off()
+
 
 tiff(filename="./graphics/I4512ivac_fecal_shannon_alpha_div_over_time2.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
 plot_datf %>%
@@ -321,6 +324,27 @@ plot_datf %>%
   theme_bw()
 dev.off()
 
+  
+tiff(filename="./graphics/I4512ivac_fecal_shannon_alpha_div_over_time3.tiff", width=8, height=8, units="in", res=600, bg="transparent", family = "sans", pointsize = 12,  compression="lzw")
+plot_datf %>%
+  ggplot(aes(x=Days_post_challenge,
+             y=emmean,ymin=lower.CL,
+             ymax=upper.CL,
+             group=Group, color=Group)) +
+  geom_pointrange(position = position_dodge(width = .2)) +
+  geom_line() + ggtitle('Alpha diversity of all treatment groups over time',
+                        'Fecal samples') +
+  xlab('Days post challenge') +
+  ylab('Shannon') +
+  scale_color_manual(values=c(Mock_Mock = 'green',
+                              Mock_I4512i = 'skyblue',
+                              Enterisol_I4512i = 'orange'),
+                     labels=c("EVC", "MVC", "MVMC")) +
+  guides(color = guide_legend(override.aes = list(linetype = 0, size = 1.2))) +
+  theme_bw()
+dev.off()  
+  
+  
 #Cecal_contents
 EMMEANScc <- emmeans(shannon_modcc, ~ Group)
 shan_contrastscc <- emmeans::contrast(EMMEANScc, method='pairwise', adjust='fdr')

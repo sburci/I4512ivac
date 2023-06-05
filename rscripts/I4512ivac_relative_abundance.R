@@ -73,6 +73,10 @@ Abundance <- Abundance[,c(2,1,4,3,5)] #[1] "dpc_Treatment" "dpc" "Treatment""Abu
 colnames(Abundance) #confirm column names match order of dataf
 dataf <- rbind(dataf, Abundance) #combine with original table
 
+#Save relative abundance (%)
+write_tsv(dataf, "./outputs/I4512ivac_rel_abund_percentages.tsv")
+
+#Create relative abundance stacked bar graphs
 tiff('./graphics/I4512ivac_fecal_relative_abundance_percent_bytreatment.tiff', units="in", width=10, height=6, res=600, family = "sans", pointsize = 12,  compression="lzw")
 ggplot(dataf, aes(x = dpc, y = Abundance, fill = Genus)) +
   geom_bar(stat = "identity", color = "black") +
