@@ -15,8 +15,8 @@ library(tidyverse)
 library(phyloseq)
 library(cowplot)
 library(DESeq2)
-library(ANCOMBC)
-library(funfuns)
+#library(ANCOMBC)
+#library(funfuns)
 
 
 #Open I4512ivac_phylo_all.rds and create phylo subset objects
@@ -222,17 +222,19 @@ sig_all$dpc
 
 #create log2FoldChange graphs comparing each treatment
 MVMCvsEVC <- 
-  ggplot(subset(sig_all, vs %in% "MVMCvsEVC"), 
-                    aes(x = log2FoldChange, y = Genus, color = dpc)) +
+  sig_all %>% 
+  filter(abs(log2FoldChange) > .25) %>% 
+  filter(vs %in% "MVMCvsEVC") %>% 
+  ggplot(aes(x = log2FoldChange, y = Genus, color = dpc)) +
   geom_point(aes(shape = dpc), size = 2) +
   ggtitle('MVMC vs EVC') +
   guides(color=guide_legend("Days post challenge"), shape=guide_legend("Days post challenge")) +
   annotate("text", x=-6.3, y=2, label="Enriched in MVMC", size = 2.5) +
   annotate("text", x=12.6, y=2, label="Enriched in EVC", size = 2.5) +
   theme(legend.key=element_blank(),legend.background=element_blank()) +
-  theme_bw()
+  theme_bw() + geom_vline(xintercept=0)
 tiff('./graphics/I4512ivac_fecal_differential_abundance_MVMCvsEVC.tiff', units="in", width=10, height=9, res=600, family = "sans", pointsize = 12,  compression="lzw")
-MVMCvsEVC + geom_vline(xintercept=0)
+MVMCvsEVC
 dev.off()
 
 MVMCvsMVC <- 
