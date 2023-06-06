@@ -1,13 +1,13 @@
 # I 4,[5],12:i:- MICROBIOME ANALYSIS
 # Selma Burciaga
-# May 25, 2023
+# June 6, 2023
 # Rscript: I4512ivac_differential_abundance.R
 # R v4.3.0
 
 ## PART 5:
 ## anything ending with f is for Fecal samples
 ## anything ending with cc is for Cecal Content samples
-## code in this script was created with the help of Carmen Wickware
+## code in this script was created with the help of Jules Trachsel
 
 
 # DIFFERENTIAL ABUNDANCE: STATS USING DESeq2___________________________________________________
@@ -16,8 +16,8 @@ library(tidyverse)
 library(phyloseq)
 library(cowplot)
 library(DESeq2)
-library(ANCOMBC)
-library(funfuns)
+#library(ANCOMBC)
+#library(funfuns)
 
 
 #Open I4512ivac_phylo_all.rds and create phylo subset objects
@@ -173,6 +173,19 @@ resultsNames(dds_d2_both)
   #create log2FoldChange graph
   ggplot(sig_d2_both, aes(x = log2FoldChange, y = Genus)) +
     geom_point()
+  
+  #Comparison: Enterisol vaccinated challenge (EVC) vs mock vaccinated mock challenged (MVMC) - should be same as above
+  res_d2_EVC2 <- lfcShrink(dds_d2_both, coef = resultsNames(dds_d2_both)[3], type = 'apeglm')
+  #change code below to get EVC on left side of graph
+  #create column with significant pvalues <0.05
+  sig_d2_EVC2 = res_d2_EVC2[which(res_d2_EVC2$padj < 0.05), ]
+  sig_d2_EVC2 = cbind(as(sig_d2_EVC2, "data.frame"), as(tax_table(PHYLOf_d2)[rownames(sig_d2_EVC2), ], "matrix"))
+  sig_d2_EVC2 $Enrichedin <- ifelse(sig_d2_EVC2$log2FoldChange <=0, 'EVC', 'MVC') #negative log2Fold change = enriched in EVC
+  sig_d2_EVC2$dpc <- '2'
+  sig_d2_EVC2$vs <- 'EVC2vsMVMC' #add column of comparison
+  #create log2FoldChange graph
+  ggplot(sig_d2_EVC2, aes(x = log2FoldChange, y = Genus)) +
+    geom_point()
 
 #Days post challenge 7
 PHYLOf_d7_both <- prune_samples(x = PHYLOf, samples = PHYLOf@sam_data$dpc == 7)
@@ -193,6 +206,19 @@ resultsNames(dds_d7_both)
   ggplot(sig_d7_both, aes(x = log2FoldChange, y = Genus)) +
     geom_point()
   
+  #Comparison: Enterisol vaccinated challenge (EVC) vs mock vaccinated mock challenged (MVMC) - should be same as above
+  res_d7_EVC2 <- lfcShrink(dds_d7_both, coef = resultsNames(dds_d7_both)[3], type = 'apeglm')
+  #change code below to get EVC on left side of graph
+  #create column with significant pvalues <0.05
+  sig_d7_EVC2 = res_d7_EVC2[which(res_d7_EVC2$padj < 0.05), ]
+  sig_d7_EVC2 = cbind(as(sig_d7_EVC2, "data.frame"), as(tax_table(PHYLOf_d7)[rownames(sig_d7_EVC2), ], "matrix"))
+  sig_d7_EVC2 $Enrichedin <- ifelse(sig_d7_EVC2$log2FoldChange <=0, 'EVC', 'MVC') #negative log2Fold change = enriched in EVC
+  sig_d7_EVC2$dpc <- '7'
+  sig_d7_EVC2$vs <- 'EVC2vsMVMC' #add column of comparison
+  #create log2FoldChange graph
+  ggplot(sig_d7_EVC2, aes(x = log2FoldChange, y = Genus)) +
+    geom_point()
+  
 #Days post challenge 14
 PHYLOf_d14_both <- prune_samples(x = PHYLOf, samples = PHYLOf@sam_data$dpc == 14)
 PHYLOf_d14_both <- prune_taxa(taxa_sums(PHYLOf_d14_both) > 1, PHYLOf_d14_both)
@@ -211,63 +237,97 @@ resultsNames(dds_d14_both)
   #create log2FoldChange graph
   ggplot(sig_d14_both, aes(x = log2FoldChange, y = Genus)) +
     geom_point()
+  
+  #Comparison: Enterisol vaccinated challenge (EVC) vs mock vaccinated mock challenged (MVMC) - should be same as above MVMCvsEVC?
+  res_d14_EVC2 <- lfcShrink(dds_d14_both, coef = resultsNames(dds_d14_both)[3], type = 'apeglm')
+  #change code below to get EVC on left side of graph
+  #create column with significant pvalues <0.05
+  sig_d14_EVC2 = res_d14_EVC2[which(res_d14_EVC2$padj < 0.05), ]
+  sig_d14_EVC2 = cbind(as(sig_d14_EVC2, "data.frame"), as(tax_table(PHYLOf_d14)[rownames(sig_d14_EVC2), ], "matrix"))
+  sig_d14_EVC2 $Enrichedin <- ifelse(sig_d14_EVC2$log2FoldChange <=0, 'EVC', 'MVC') #negative log2Fold change = enriched in EVC
+  sig_d14_EVC2$dpc <- '14'
+  sig_d14_EVC2$vs <- 'EVC2vsMVMC' #add column of comparison
+  #create log2FoldChange graph
+  ggplot(sig_d14_EVC2, aes(x = log2FoldChange, y = Genus)) +
+    geom_point()
 
 
 
   
   
 #Join multiple data frames
-sig_all <- rbind(sig_d2_both, sig_d7_both, sig_d14_both, sig_d2_MVC, sig_d7_MVC, sig_d14_MVC, sig_d2_EVC, sig_d7_EVC, sig_d14_EVC)
+sig_all <- rbind(sig_d2_both, sig_d7_both, sig_d14_both, sig_d2_MVC, sig_d7_MVC, sig_d14_MVC, sig_d2_EVC, sig_d7_EVC, sig_d14_EVC, sig_d2_EVC2, sig_d7_EVC2, sig_d14_EVC2)
 sig_all$dpc <- factor(sig_all$dpc, levels=c('2', '7', '14'))
 sig_all$dpc
 
 #create log2FoldChange graphs comparing each treatment
 MVMCvsEVC <- 
-  ggplot(subset(sig_all, vs %in% "MVMCvsEVC"), 
-                    aes(x = log2FoldChange, y = Genus, color = dpc)) +
+  sig_all %>% 
+  filter(abs(log2FoldChange) > .25) %>% 
+  filter(vs %in% "MVMCvsEVC") %>% 
+  ggplot(aes(x = log2FoldChange, y = Genus, color = dpc)) +
   geom_point(aes(shape = dpc), size = 2) +
   ggtitle('MVMC vs EVC') +
   guides(color=guide_legend("Days post challenge"), shape=guide_legend("Days post challenge")) +
   annotate("text", x=-6.3, y=2, label="Enriched in MVMC", size = 2.5) +
   annotate("text", x=12.6, y=2, label="Enriched in EVC", size = 2.5) +
   theme(legend.key=element_blank(),legend.background=element_blank()) +
-  theme_bw()
-tiff('./graphics/I4512ivac_fecal_differential_abundance_MVMCvsEVC.tiff', units="in", width=10, height=9, res=600, family = "sans", pointsize = 12,  compression="lzw")
-MVMCvsEVC + geom_vline(xintercept=0)
+  theme_bw() + geom_vline(xintercept=0) +
+  theme(legend.position = 'bottom')
+tiff('./graphics/I4512ivac_fecal_differential_abundance_MVMCvsEVC.tiff', units="in", width=8, height=6, res=600, family = "sans", pointsize = 12,  compression="lzw")
+MVMCvsEVC
 dev.off()
 
 MVMCvsMVC <- 
-  ggplot(subset(sig_all, vs %in% "MVMCvsMVC"), 
-         aes(x = log2FoldChange, y = Genus, color = dpc)) +
+  sig_all %>% 
+  filter(abs(log2FoldChange) > .25) %>% 
+  filter(vs %in% "MVMCvsMVC") %>% 
+  ggplot(aes(x = log2FoldChange, y = Genus, color = dpc)) +
   geom_point(aes(shape = dpc), size = 2) +
   ggtitle('MVMC vs MVC') +
   guides(color=guide_legend("Days post challenge"), shape=guide_legend("Days post challenge")) +
   annotate("text", x=-2.9, y=2, label="Enriched in MVMC", size = 2.5) +
   annotate("text", x=11.2, y=2, label="Enriched in MVC", size = 2.5) +
   theme(legend.key=element_blank(),legend.background=element_blank()) +
-  theme_bw()
-tiff('./graphics/I4512ivac_fecal_differential_abundance_MVMCvsMVC.tiff', units="in", width=10, height=9, res=600, family = "sans", pointsize = 12,  compression="lzw")
-MVMCvsMVC + geom_vline(xintercept=0)  
+  theme_bw() + geom_vline(xintercept=0) +
+  theme(legend.position = 'bottom')
+tiff('./graphics/I4512ivac_fecal_differential_abundance_MVMCvsMVC.tiff', units="in", width=8, height=6, res=600, family = "sans", pointsize = 12,  compression="lzw")
+MVMCvsMVC 
 dev.off()
 
 EVCvsMVC <- 
-  ggplot(subset(sig_all, vs %in% "EVCvsMVC"), 
-         aes(x = log2FoldChange, y = Genus, color = dpc)) +
+  sig_all %>% 
+  filter(abs(log2FoldChange) > .25) %>% 
+  filter(vs %in% "EVCvsMVC") %>% 
+  ggplot(aes(x = log2FoldChange, y = Genus, color = dpc)) +
   geom_point(aes(shape = dpc), size = 2) +
   ggtitle('EVC vs MVC') +
   guides(color=guide_legend("Days post challenge"), shape=guide_legend("Days post challenge")) +
   annotate("text", x=-2.5, y=2, label="Enriched in EVC", size = 2.5) +
   annotate("text", x=9.3, y=2, label="Enriched in MVC", size = 2.5) +
   theme(legend.key=element_blank(),legend.background=element_blank()) +
-  theme_bw()
-tiff('./graphics/I4512ivac_fecal_differential_abundance_EVCvsMVC.tiff', units="in", width=10, height=9, res=600, family = "sans", pointsize = 12,  compression="lzw")
-EVCvsMVC + geom_vline(xintercept=0)  
+  theme_bw() + geom_vline(xintercept=0) +
+  theme(legend.position = 'bottom')
+tiff('./graphics/I4512ivac_fecal_differential_abundance_EVCvsMVC.tiff', units="in", width=8, height=6, res=600, family = "sans", pointsize = 12,  compression="lzw")
+EVCvsMVC 
 dev.off()
   
-
-
-
-theme_classic()
+EVC2vsMVMC <- 
+  sig_all %>% 
+  filter(abs(log2FoldChange) > .25) %>% 
+  filter(vs %in% "EVC2vsMVMC") %>% 
+  ggplot(aes(x = log2FoldChange, y = Genus, color = dpc)) +
+  geom_point(aes(shape = dpc), size = 2) +
+  ggtitle('EVC vs MVMC') +
+  guides(color=guide_legend("Days post challenge"), shape=guide_legend("Days post challenge")) +
+  annotate("text", x=-2.5, y=2, label="Enriched in EVC", size = 2.5) +
+  annotate("text", x=9.3, y=2, label="Enriched in MVMC", size = 2.5) +
+  theme(legend.key=element_blank(),legend.background=element_blank()) +
+  theme_bw() + geom_vline(xintercept=0) +
+  theme(legend.position = 'bottom')
+tiff('./graphics/I4512ivac_fecal_differential_abundance_EVC2vsMVMC.tiff', units="in", width=8, height=6, res=600, family = "sans", pointsize = 12,  compression="lzw")
+EVC2vsMVMC 
+dev.off()
   
   
   
@@ -291,15 +351,6 @@ theme_classic()
 
 
 
-
-# # this IDs OTUS that change over time
-# dds <- phyloseq_to_deseq2(physeq = E, design = ~ Challenge + day_post_challenge)
-# dds_lrt_time <- DESeq(dds, test="LRT", reduced = ~ Challenge)
-
-
-# # this IDS OTUS that differ between groups
-# dds <- phyloseq_to_deseq2(physeq = E, design = ~ Challenge + day_post_challenge)
-# dds_lrt_time <- DESeq(dds, test="LRT", reduced = ~ day_post_challenge)
 
 
 
@@ -348,7 +399,7 @@ res_prim %>%
 # get.groups(shared=I4512ivac.otu.0.03.subsample.shared, design=mouse.time.design, sets=Fecal)
 # lefse(shared=I4512ivac.otu.0.03.subsample.shared, design=/project/fsepru113/sburciaga/I4512ivac/mothuro/I4512ivac_design.txt)
 
-
+# Carmen Wickware's code
 library(MASS)
 library(tidyr)
 library(ggplot2)
